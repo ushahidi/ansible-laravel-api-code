@@ -1,0 +1,84 @@
+---
+- block:
+  - name: install latest version of server packages
+    apt: name={{ item.pkg }} state=latest
+    when: item.when | default(True) | bool
+    with_items:
+      - { pkg: php5.6-mysqlnd }
+      - { pkg: mysql-client-5.6 }
+      - { pkg: memcached, when: "{{ laravel_api_memcached_enabled }}" }
+      - { pkg: supervisor, when: "{{ laravel_api_queue_workers_enabled }}" }
+
+  - name: create app directory
+    file: path={{ laravel_api_base_path }} state=directory owner={{ deploy_user }} group={{ deploy_user }}
+
+  - name: give deployer user access to ssh agent
+    shell: |
+      if [ -n "$SSH_AUTH_SOCK" ]; then
+        setfacl -m u:{{ deploy_user }}:rw $SSH_AUTH_SOCK ;
+        setfacl -m u:{{ deploy_user }}:x $(dirname $SSH_AUTH_SOCK)
+      fi
+
+  become: true
+  become_user: root
+
+- block:
+  - name: deploy app code from github
+    git: repo={{ laravel_api_repo_url }} dest={{ laravel_api_base_path }} version={{ laravel_api_repo_version }} force=yes
+
+  - name: update ownership of web server writable folders
+    file: path="{{ laravel_api_base_path }}/{{ item }}" state=directory mode=ugo+rwx owner={{ www_user }} group={{ www_group }} recurse=yes
+    with_items:
+      - storage
+      - bootstrap/cache
+    become_user: root
+
+  - name: generate .env file with configurations in server
+    include_role: 
+      name: ansible-dotenv-generator
+    vars:
+      dest: "{{ laravel_api_base_path }}/.env"
+      dotenv_sample: "{{ laravel_api_base_path }}/{{ laravel_api_dotenv_sample }}"
+      env: "{{ laravel_api_env }}"
+      dest_owner: "{{ deploy_user }}"
+    args:
+      allow_duplicates: True
+
+  - name: ensure vendor folder
+    file: path={{ laravel_api_base_path }}/vendor state=directory 
+
+  - name: install dependencies using composer
+    composer: command=install working_dir={{ laravel_api_base_path }} no_dev={{ not laravel_api_composer_dev_pkgs }}
+
+  # run migrations
+  - name: run database migrations
+    command: "{{ laravel_api_php }} artisan migrate --force"
+    args:
+      chdir: "{{ laravel_api_base_path }}"
+    become_user: "{{ www_user }}"
+
+  # -- queue worker management block ---
+  - when: laravel_api_queue_workers_enabled
+    block:
+    - name: Configure Supervisor to run laravel queue
+      template: dest=/etc/supervisor/conf.d/laravel-queue.conf src=supervisor-queue.conf.j2
+      notify: restart supervisor
+
+    # this check is necessary because of behaviour like https://github.com/ansible/ansible/issues/3977
+    - name: Check status of supervisor service
+      shell: "supervisorctl status | grep -q laravel-worker:"
+      ignore_errors: true
+      register: laravel_worker_status
+
+    - name: Ensure supervisor process is present
+      supervisorctl: name=laravel-worker state=present
+      when: laravel_worker_status.rc != 0
+
+    - name: restart queue workers
+      command: "{{ laravel_api_php }} artisan queue:restart"
+      args:
+        chdir: "{{ laravel_api_base_path }}"
+      become_user: "{{ www_user }}"
+
+  become: true
+  become_user: "{{ deploy_user }}"

@@ -1,0 +1,27 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+lint:
+  name: ansible-lint
+  enabled: false
+platforms:
+  - name: ansible_laravel_api_code
+    image: molecule_local/ansible_laravel_api_code
+    command: sleep infinity
+    dockerfile: Dockerfile
+    groups:
+      - test
+  - name: mysql
+    image: molecule_local/mysql
+    dockerfile: mysql.Dockerfile
+    command: mysqld
+    groups:
+      - mysql
+provisioner:
+  name: ansible
+scenario:
+  name: default
+verifier:
+  name: testinfra

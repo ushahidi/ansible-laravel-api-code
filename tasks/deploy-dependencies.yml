@@ -1,0 +1,22 @@
+---
+- block:
+  - name: ensure dependencies are installed
+    apt: name={{ item }} state=present
+    with_items:
+      - acl
+      - git
+      - curl
+      - unzip
+
+  - name: install composer
+    shell: curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
+    args:
+      creates: /usr/local/bin/composer
+    tags: [ skip_ansible_lint ]
+
+  - name: set composer github token
+    command: "composer config -g github-oauth.github.com {{ github_token }}"
+    when: github_token|default("") != ""
+
+  become: yes
+  become_user: root

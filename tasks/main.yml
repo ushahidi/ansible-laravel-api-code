@@ -1,0 +1,13 @@
+---
+- set_fact:
+    laravel_api_code_unlock_dep_roles: true   # shame on me for such ugly trick
+
+- include: deployer-user.yml
+  when: deploy_user != 'root'
+  tags: server-provision
+
+- include: deploy-dependencies.yml
+  tags: server-provision
+
+- include: code-deploy.yml
+  tags: code-deploy
