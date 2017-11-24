@@ -1,7 +1,7 @@
 ---
 - block:
   - name: install latest version of server packages
-    apt: name={{ item.pkg }} state=latest
+    apt: name={{ item.pkg }} state=present
     when: item.when | default(True) | bool
     with_items:
       - { pkg: php5.6-mysqlnd }
@@ -31,10 +31,11 @@
     with_items:
       - storage
       - bootstrap/cache
+    become: true
     become_user: root
 
   - name: generate .env file with configurations in server
-    include_role: 
+    include_role:
       name: ansible-dotenv-generator
     vars:
       dest: "{{ laravel_api_base_path }}/.env"
@@ -45,40 +46,44 @@
       allow_duplicates: True
 
   - name: ensure vendor folder
-    file: path={{ laravel_api_base_path }}/vendor state=directory 
+    file: path={{ laravel_api_base_path }}/vendor state=directory
 
   - name: install dependencies using composer
     composer: command=install working_dir={{ laravel_api_base_path }} no_dev={{ not laravel_api_composer_dev_pkgs }}
+
+  - name: create autoload
+    composer: command=dump-autoload working_dir={{ laravel_api_base_path }}
 
   # run migrations
   - name: run database migrations
     command: "{{ laravel_api_php }} artisan migrate --force"
     args:
       chdir: "{{ laravel_api_base_path }}"
+    become: true
     become_user: "{{ www_user }}"
 
   # -- queue worker management block ---
   - when: laravel_api_queue_workers_enabled
     block:
-    - name: Configure Supervisor to run laravel queue
-      template: dest=/etc/supervisor/conf.d/laravel-queue.conf src=supervisor-queue.conf.j2
-      notify: restart supervisor
+      - name: Configure Supervisor to run laravel queue
+        template: dest=/etc/supervisor/conf.d/laravel-queue.conf src=supervisor-queue.conf.j2
+        notify: restart supervisor
 
-    # this check is necessary because of behaviour like https://github.com/ansible/ansible/issues/3977
-    - name: Check status of supervisor service
-      shell: "supervisorctl status | grep -q laravel-worker:"
-      ignore_errors: true
-      register: laravel_worker_status
+      # this check is necessary because of behaviour like https://github.com/ansible/ansible/issues/3977
+      - name: Check status of supervisor service
+        shell: "supervisorctl status | grep -q laravel-worker:"
+        ignore_errors: true
+        register: laravel_worker_status
 
-    - name: Ensure supervisor process is present
-      supervisorctl: name=laravel-worker state=present
-      when: laravel_worker_status.rc != 0
+      - name: Ensure supervisor process is present
+        supervisorctl: name=laravel-worker state=present
+        when: laravel_worker_status.rc != 0
 
-    - name: restart queue workers
-      command: "{{ laravel_api_php }} artisan queue:restart"
-      args:
-        chdir: "{{ laravel_api_base_path }}"
-      become_user: "{{ www_user }}"
+      - name: restart queue workers
+        command: "{{ laravel_api_php }} artisan queue:restart"
+        args:
+          chdir: "{{ laravel_api_base_path }}"
+        become_user: "{{ www_user }}"
 
   become: true
   become_user: "{{ deploy_user }}"

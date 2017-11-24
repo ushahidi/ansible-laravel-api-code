@@ -5,3 +5,6 @@
 - src: git+ssh://git@github.com/ushahidi/ansible-common.git
   version: master
   name: ushahidi.common
+
+- src: git+https://github.com/ushahidi/ansible-dotenv-generator.git
+  name: ansible-dotenv-generator

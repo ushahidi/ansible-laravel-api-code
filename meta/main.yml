@@ -33,13 +33,13 @@ galaxy_info:
   # platforms is a list of platforms, and each platform has a name and a list of versions.
   #
   platforms:
-  - name: Ubuntu
-    versions:
-    - 14.04
+    - name: Ubuntu
+      versions:
+        - 14.04
 
   galaxy_tags: []
- 
+
 dependencies:
-- src: git+https://github.com/ushahidi/ansible-dotenv-generator.git
-  name: ansible-dotenv-generator
-  when: "{{ laravel_api_code_unlock_dep_roles | default(False) }}"    # shame on me for such ugly trick
+  - src: git+https://github.com/ushahidi/ansible-dotenv-generator.git
+    name: ansible-dotenv-generator
+    when: laravel_api_code_unlock_dep_roles | default(False)    # shame on me for such ugly trick

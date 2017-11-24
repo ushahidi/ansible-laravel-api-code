@@ -2,14 +2,17 @@
 - hosts: all
   tasks: []
 
-- hosts: test
+- name: Converge
+  hosts: ansible
   vars:
     deploy_user: deploy
   pre_tasks:
     # prepare access to mysql and ensure it's up
-    - set_fact:
-        mysql_host: "{{ hostvars['mysql-default']['ansible_default_ipv4']['address'] }}"
-    - shell: |
+    - name: set mysql host
+      set_fact:
+        mysql_host: "{{ hostvars['mysql']['ansible_default_ipv4']['address'] }}"
+    - name: wait for mysql to be up
+      shell:
         while [ ${x:-0} -lt 120 ]; do
           nc -z {{ mysql_host }} 3306 && exit 0;
           sleep 1;
@@ -18,6 +21,8 @@
         exit 1;
       args:
         executable: /bin/bash
+      tags:
+        - skip_ansible_lint
   roles:
     - role: ushahidi.common
       firewall_disabled: True
