@@ -4,7 +4,6 @@
     apt: name={{ item.pkg }} state=present
     when: item.when | default(True) | bool
     with_items:
-      - { pkg: php5.6-mysqlnd }
       - { pkg: mysql-client-5.6 }
       - { pkg: memcached, when: "{{ laravel_api_memcached_enabled }}" }
       - { pkg: supervisor, when: "{{ laravel_api_queue_workers_enabled }}" }
