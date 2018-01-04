@@ -61,6 +61,15 @@
     become: true
     become_user: "{{ www_user }}"
 
+  # run seeds
+  - name: Run all seeders
+    command: "{{ laravel_api_php }} artisan db:seed"
+    args:
+      chdir: "{{ laravel_api_base_path }}"
+    become: true
+    become_user: "{{ www_user }}"
+    when: laravel_seed_db
+
   # -- queue worker management block ---
   - when: laravel_api_queue_workers_enabled
     block:
