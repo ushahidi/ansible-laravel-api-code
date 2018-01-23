@@ -1,7 +1,7 @@
 ansible-laravel-api-code
 =========
 
-Deploy Laravel API projects 
+Deploy Laravel API projects
 
 Role Variables
 --------------
@@ -16,10 +16,11 @@ Optional:
 * `laravel_api_dotenv_sample`: (default=`.env.deploy`) sample environment configuration file to use
 * `laravel_api_composer_dev_pkgs`: (default=`false`) let composer install packages marked for development
 * `laravel_api_memcached_enabled`: (default=`true`) the API project uses memcached
-* `laravel_api_queue_workers_enabled`: (default=`false`) the API project uses queue workers 
+* `laravel_api_queue_workers_enabled`: (default=`false`) the API project uses queue workers
 * `laravel_api_php`: (default=`php`) php interpreter executable to use
 * `www_user`: (default=`www-data`) user the web server is running as
 * `www_group`: (default=`www-data`) group the web server is running as
+* `laravel_api_clone_path`: path in the host where the project repo should be cloned. It is assumed to be a parent to `laravel_api_base_path`. Defaults to `laravel_api_base_path`.
 
 
 Example Playbook

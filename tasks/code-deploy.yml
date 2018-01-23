@@ -4,13 +4,12 @@
     apt: name={{ item.pkg }} state=present
     when: item.when | default(True) | bool
     with_items:
-      - { pkg: php5.6-mysqlnd }
-      - { pkg: mysql-client-5.6 }
+      - { pkg: mysql-client }
       - { pkg: memcached, when: "{{ laravel_api_memcached_enabled }}" }
       - { pkg: supervisor, when: "{{ laravel_api_queue_workers_enabled }}" }
 
   - name: create app directory
-    file: path={{ laravel_api_base_path }} state=directory owner={{ deploy_user }} group={{ deploy_user }}
+    file: path={{ laravel_api_clone_path | default(laravel_api_base_path) }} state=directory owner={{ deploy_user }} group={{ deploy_user }}
 
   - name: give deployer user access to ssh agent
     shell: |
@@ -24,7 +23,7 @@
 
 - block:
   - name: deploy app code from github
-    git: repo={{ laravel_api_repo_url }} dest={{ laravel_api_base_path }} version={{ laravel_api_repo_version }} force=yes
+    git: repo={{ laravel_api_repo_url }} dest={{ laravel_api_clone_path | default(laravel_api_base_path) }} version={{ laravel_api_repo_version }} force=yes
 
   - name: update ownership of web server writable folders
     file: path="{{ laravel_api_base_path }}/{{ item }}" state=directory mode=ugo+rwx owner={{ www_user }} group={{ www_group }} recurse=yes
@@ -61,6 +60,15 @@
       chdir: "{{ laravel_api_base_path }}"
     become: true
     become_user: "{{ www_user }}"
+
+  # run seeds
+  - name: Run all seeders
+    command: "{{ laravel_api_php }} artisan db:seed"
+    args:
+      chdir: "{{ laravel_api_base_path }}"
+    become: true
+    become_user: "{{ www_user }}"
+    when: laravel_seed_db
 
   # -- queue worker management block ---
   - when: laravel_api_queue_workers_enabled
