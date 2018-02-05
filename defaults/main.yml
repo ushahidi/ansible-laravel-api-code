@@ -7,6 +7,7 @@ laravel_api_dotenv_sample: .env.deploy
 laravel_api_env: {}
 laravel_api_php: php
 laravel_seed_db: false
+laravel_run_migrations: true
 
 www_user: www-data
 www_group: www-data
