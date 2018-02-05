@@ -59,6 +59,7 @@
       chdir: "{{ laravel_api_base_path }}"
     become: true
     become_user: "{{ www_user }}"
+    when: laravel_run_migrations
 
   # run seeds
   - name: Run all seeders
