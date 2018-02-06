@@ -9,5 +9,9 @@ laravel_api_php: php
 laravel_seed_db: false
 laravel_run_migrations: true
 
+laravel_passport_key_path: "storage/passport"
+laravel_passport_public_key: false
+laravel_passport_private_key: false
+
 www_user: www-data
 www_group: www-data
