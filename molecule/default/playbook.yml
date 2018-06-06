@@ -8,6 +8,8 @@
     deploy_user: deploy
   pre_tasks:
     # prepare access to mysql and ensure it's up
+    - name: install netcat
+      apt: name=netcat-openbsd state=present
     - name: set mysql host
       set_fact:
         mysql_host: "{{ hostvars['mysql']['ansible_default_ipv4']['address'] }}"
@@ -26,8 +28,9 @@
   roles:
     - role: ushahidi.common
       firewall_disabled: True
+      common_ntp_sync: False
     - role: ushahidi.php
-      php_minor_version: "5.6"
+      php_minor_version: "7.0"
     - role: ansible-laravel-api-code
       laravel_api_base_path: /var/www/app
       laravel_api_repo_url: https://github.com/tuxpiper/laravel-realworld-example-app.git

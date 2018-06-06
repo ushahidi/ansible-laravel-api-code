@@ -4,8 +4,7 @@
     laravel_api_code_unlock_dep_roles: true   # shame on me for such ugly trick
 
 - include_tasks: deployer-user.yml
-  when: deploy_user != 'root'
-  tags: server-provision
+  when: create_deploy_user and deploy_user != 'root'
 
 - include_tasks: deploy-dependencies.yml
   tags: server-provision

@@ -8,7 +8,7 @@ lint:
   enabled: False
 platforms:
   - name: ansible_laravel_api_code
-    image: ubuntu:trusty
+    image: ubuntu:xenial
     groups:
       - ansible
   - name: mysql

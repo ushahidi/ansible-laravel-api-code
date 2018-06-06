@@ -3,6 +3,7 @@ laravel_api_folder: ""
 laravel_api_composer_dev_pkgs: false
 laravel_api_memcached_enabled: true
 laravel_api_queue_workers_enabled: false
+laravel_api_github_fetch_enabled: true
 laravel_api_dotenv_sample: .env.deploy
 laravel_api_env: {}
 laravel_api_php: php
@@ -11,3 +12,6 @@ laravel_run_migrations: true
 
 www_user: www-data
 www_group: www-data
+
+create_deploy_user: true
+# deploy_user:
