@@ -18,6 +18,7 @@
         setfacl -m u:{{ deploy_user }}:rw $SSH_AUTH_SOCK ;
         setfacl -m u:{{ deploy_user }}:x $(dirname $SSH_AUTH_SOCK)
       fi
+    when: laravel_api_github_fetch_enabled
 
   become: true
   become_user: root
