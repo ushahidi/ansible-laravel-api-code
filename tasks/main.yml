@@ -11,3 +11,7 @@
 
 - include_tasks: code-deploy.yml
   tags: code-deploy
+
+- name: relock role dependencies
+  set_fact:
+    laravel_api_code_unlock_dep_roles: false   # shame on me for such ugly trick

@@ -61,6 +61,7 @@
     command: "{{ laravel_api_php }} artisan migrate --force"
     args:
       chdir: "{{ laravel_api_base_path }}"
+    when: laravel_run_migrations
     become: true
     become_user: "{{ www_user }}"
 
