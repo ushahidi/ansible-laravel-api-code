@@ -54,7 +54,7 @@
     composer: command=install working_dir={{ laravel_api_base_path }} no_dev={{ not laravel_api_composer_dev_pkgs }}
 
   - name: create autoload
-    composer: command=dump-autoload working_dir={{ laravel_api_base_path }}
+    composer: command=dump-autoload working_dir={{ laravel_api_base_path }} optimize_autoloader=yes
 
   # run migrations
   - name: run database migrations
