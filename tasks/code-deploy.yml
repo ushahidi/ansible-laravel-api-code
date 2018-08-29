@@ -64,7 +64,7 @@
         path: "{{ laravel_api_base_path }}/{{ laravel_passport_key_path }}"
         state: directory
         owner: "{{ www_user }}"
-        mode: 0770
+        mode: 0775
       when: laravel_passport_private_key is defined or laravel_passport_public_key is defined
 
     - name: create passport private key
