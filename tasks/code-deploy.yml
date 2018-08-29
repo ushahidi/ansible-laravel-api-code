@@ -56,6 +56,22 @@
   - name: create autoload
     composer: command=dump-autoload working_dir={{ laravel_api_base_path }} optimize_autoloader=yes
 
+  - name: create passport private key
+    copy:
+      content: "{{ laravel_passport_private_key }}"
+      dest: "{{ laravel_api_base_path }}/{{ laravel_passport_key_path }}/oauth-private.key"
+      owner: "{{ www_user }}"
+      mode: 0660
+    when: laravel_passport_private_key is defined
+
+  - name: create passport public key
+    copy:
+      content: "{{ laravel_passport_public_key }}"
+      dest: "{{ laravel_api_base_path }}/{{ laravel_passport_key_path }}/oauth-public.key"
+      owner: "{{ www_user }}"
+      mode: 0660
+    when: laravel_passport_public_key is defined
+
   # run migrations
   - name: run database migrations
     command: "{{ laravel_api_php }} artisan migrate --force"
