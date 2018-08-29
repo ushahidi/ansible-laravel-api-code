@@ -63,6 +63,8 @@
       owner: "{{ www_user }}"
       mode: 0660
     when: laravel_passport_private_key is defined
+    become: true
+    become_user: root
 
   - name: create passport public key
     copy:
@@ -71,6 +73,8 @@
       owner: "{{ www_user }}"
       mode: 0660
     when: laravel_passport_public_key is defined
+    become: true
+    become_user: root
 
   # run migrations
   - name: run database migrations
