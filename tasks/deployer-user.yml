@@ -6,7 +6,7 @@
     
   - name: ensure celery deploy user is in www group
     user:
-      name: "{{ DEPLOY_USER }}"
+      name: "{{ deploy_user }}"
       groups: "{{ www_group }}"
       append: yes
 
