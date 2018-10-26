@@ -1,0 +1,9 @@
+[program:service-worker-{{ laravel_api_worker_id }}]
+process_name=%(program_name)s_%(process_num)02d
+command=php {{ laravel_api_base_path }}/artisan queue:work --sleep=3 --tries=3 --daemon
+autostart=true
+autorestart=true
+user={{ www_user }}
+numprocs=4
+redirect_stderr=true
+stdout_logfile={{ laravel_api_base_path }}/storage/logs/worker.log

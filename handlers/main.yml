@@ -1,2 +1,7 @@
 ---
-# handlers file for ushahidi.laravel-code
+- name: restart supervisor
+  supervisorctl: name=service-worker-{{ laravel_api_worker_id }} state=restarted
+  retries: 5
+  delay: 3
+  become: true
+  become_user: root

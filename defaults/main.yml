@@ -19,3 +19,4 @@ www_group: www-data
 
 create_deploy_user: true
 # deploy_user:
+laravel_api_worker_id: laravel
