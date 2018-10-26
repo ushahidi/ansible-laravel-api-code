@@ -1,6 +1,6 @@
 ---
 - name: restart supervisor
-  supervisorctl: name=service-worker-{{ laravel_api_worker_id }} state=restarted
+  supervisorctl: name=laravel-worker-{{ laravel_api_worker_id }} state=restarted
   retries: 5
   delay: 3
   become: true

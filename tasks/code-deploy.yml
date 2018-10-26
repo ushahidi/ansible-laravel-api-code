@@ -107,17 +107,17 @@
   - when: laravel_api_queue_workers_enabled
     block:
       - name: Configure Supervisor to run laravel queue
-        template: dest=/etc/supervisor/conf.d/laravel-queue.conf src=supervisor-queue.conf.j2
+        template: dest=/etc/supervisor/conf.d/laravel-worker-{{ laravel_api_worker_id }}.conf src=supervisor-queue.conf.j2
         notify: restart supervisor
 
       # this check is necessary because of behaviour like https://github.com/ansible/ansible/issues/3977
       - name: Check status of supervisor service
-        shell: "supervisorctl status | grep -q laravel-worker:"
+        shell: "supervisorctl status | grep -q laravel-worker-{{ laravel_api_worker_id }}:"
         ignore_errors: true
         register: laravel_worker_status
 
       - name: Ensure supervisor process is present
-        supervisorctl: name=laravel-worker state=present
+        supervisorctl: name=laravel-worker-{{ laravel_api_worker_id }} state=present
         when: laravel_worker_status.rc != 0
 
       - name: restart queue workers
