@@ -125,6 +125,8 @@
         args:
           chdir: "{{ laravel_api_base_path }}"
         become_user: "{{ www_user }}"
+    become: true
+    become_user: root
 
   become: true
   become_user: "{{ deploy_user }}"
