@@ -117,7 +117,7 @@
         register: laravel_worker_status
 
       - name: Ensure supervisor process is present
-        supervisorctl: name=laravel-worker-{{ laravel_api_worker_id }} state=present
+        supervisorctl: name="laravel-worker-{{ laravel_api_worker_id }}:" state=present
         when: laravel_worker_status.rc != 0
 
       - name: restart queue workers
