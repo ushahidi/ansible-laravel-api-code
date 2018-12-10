@@ -21,3 +21,5 @@ create_deploy_user: true
 # deploy_user:
 laravel_api_worker_id: laravel
 laravel_api_worker_timeout: 60
+laravel_api_worker_command: "queue:work"
+laravel_worker_restart_with_supervisor: false

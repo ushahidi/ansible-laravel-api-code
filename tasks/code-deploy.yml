@@ -120,11 +120,18 @@
         supervisorctl: name="laravel-worker-{{ laravel_api_worker_id }}:" state=present
         when: laravel_worker_status.rc != 0
 
+      - name: restart queue workers with supervisor
+        supervisorctl: name="laravel-worker-{{ laravel_api_worker_id }}:" state=restarted
+        retries: 5
+        delay: 3
+        when: laravel_worker_restart_with_supervisor
+
       - name: restart queue workers
         command: "{{ laravel_api_php }} artisan queue:restart"
         args:
           chdir: "{{ laravel_api_base_path }}"
         become_user: "{{ www_user }}"
+        when: not laravel_worker_restart_with_supervisor
     become: true
     become_user: root
 

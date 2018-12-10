@@ -1,6 +1,6 @@
 [program:laravel-worker-{{ laravel_api_worker_id }}]
 process_name=%(program_name)s_%(process_num)02d
-command=php {{ laravel_api_base_path }}/artisan queue:work --sleep=3 --tries=3 --timeout={{ laravel_api_worker_timeout }}
+command=php {{ laravel_api_base_path }}/artisan {{ laravel_api_worker_command }} --sleep=3 --tries=3 --timeout={{ laravel_api_worker_timeout }}
 autostart=true
 autorestart=true
 user={{ www_user }}
