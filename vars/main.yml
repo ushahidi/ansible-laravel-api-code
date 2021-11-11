@@ -1,9 +1,0 @@
----
-# vars file for ushahidi.laravel-code
-
-# laravel_api_base_path
-# laravel_api_clone_path
-# laravel_api_repo_url
-# laravel_api_repo_version
-# laravel_passport_public_key
-# laravel_passport_private_key
